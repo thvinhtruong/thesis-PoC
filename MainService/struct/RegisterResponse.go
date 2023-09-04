@@ -13,7 +13,3 @@ func GetRegisterUserResponse(resp *GrpcUserService.RegisterUserResponse) *Regist
 		UserId: resp.UserId,
 	}
 }
-
-type RegisterTutorResponse struct {
-	TutorId int32 `json:"TutorId"`
-}
