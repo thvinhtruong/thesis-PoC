@@ -1,0 +1,24 @@
+syntax="proto3";
+
+option go_package="./GrpcStudyService";
+
+message GetUserRecordRequest {
+    int32 UserId=1;
+}
+
+message UserStudyRecord {
+    string Name=3;
+    int32 Weight=4;
+    int32 Score=5;
+}
+
+message GetUserRecordResponse {
+    repeated UserStudyRecord UserRecord=1;
+}
+
+service StudyService {
+    rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
+}
+
+
+
