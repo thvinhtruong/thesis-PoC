@@ -15,19 +15,22 @@ func NewZStudyServiceServer(innerServer db.StudyRepository) ZStudyServiceServer 
 
 func (s *ZStudyServiceServer) GetUserRecord(ctx context.Context, request *GetUserRecordRequest) (*GetUserRecordResponse, error) {
 	var response *GetUserRecordResponse
+	var userStudyRecordRows []UserStudyRecord
 	resquest := db.GetUserRecordParams{
 		UserId: request.UserId,
 	}
 
-	record, err := s.innerServer.GetUserRecord(ctx, resquest)
+	record, err := s.innerServer.GetUserRecordTx(ctx, resquest)
 	if err != nil {
 		return nil, err
 	}
 
-	for pos, item := range response.UserRecord {
-		item.Name = record.UserRecord[pos].Name
-		item.Weight = record.UserRecord[pos].Weight
-		item.Score = record.UserRecord[pos].Score
+	recordRow := record.UserRecord
+
+	for pos, item := range recordRow {
+		userStudyRecordRows[pos].Name = item.Name
+		userStudyRecordRows[pos].Weight = item.Weight
+		userStudyRecordRows[pos].Score = item.Score
 	}
 
 	return response, nil

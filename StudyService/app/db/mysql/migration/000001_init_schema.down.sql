@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS `Subject`;
+DROP TABLE IF EXISTS `Record`;
