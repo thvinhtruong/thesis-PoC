@@ -12,4 +12,8 @@ var USER_SERVICE_HOST ConfigKey = ConfigKey{key: "UserServiceHost"}
 
 var USER_SERVICE_PORT ConfigKey = ConfigKey{key: "UserServicePort"}
 
+var STUDY_SERVICE_HOST ConfigKey = ConfigKey{key: "StudyServiceHost"}
+
+var STUDY_SERVICE_PORT ConfigKey = ConfigKey{key: "StudyServicePort"}
+
 var HMAC_KEY ConfigKey = ConfigKey{key: "HMAC_KEY"}

@@ -24,10 +24,15 @@ func NewUserApiHanlder(c config.Config, repo GrpcUserService.UserServiceReposito
 }
 
 func (u *UserApiHanlder) LoginUser(w http.ResponseWriter, r *http.Request) {
-	Phone := r.FormValue("Phone")
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	Email := r.FormValue("Email")
 	Password := r.FormValue("Password")
 	loginRequest := GrpcUserService.LoginUserRequest{
-		Phone:    Phone,
+		Email:    Email,
 		Password: Password,
 	}
 
@@ -47,7 +52,7 @@ func (u *UserApiHanlder) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	// set cookie for user
 	cookie := http.Cookie{
-		Name:  "gme",
+		Name:  "poc",
 		Value: token,
 	}
 
@@ -68,14 +73,14 @@ func (u *UserApiHanlder) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	Phone := r.FormValue("Phone")
+	Email := r.FormValue("Email")
 	Password := r.FormValue("Password")
 	FullName := r.FormValue("FullName")
 	Gender := r.FormValue("Gender")
 
-	log.Printf("%v %v %v\n", Phone, FullName, Gender)
+	log.Printf("%v %v %v\n", Email, FullName, Gender)
 	registerRequest := GrpcUserService.RegisterUserRequest{
-		Phone:    Phone,
+		Email:    Email,
 		Password: Password,
 		Fullname: FullName,
 		Gender:   Gender,

@@ -5,16 +5,31 @@ import (
 	"log"
 	"net/http"
 	"os"
+	GrpcStudyService "server/MainService/GrpcClients/StudyService"
 	GrpcUserService "server/MainService/GrpcClients/UserService"
 	"server/MainService/config"
 	"server/MainService/handlers"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
+	// router
+	router := mux.NewRouter()
+
+	// config
 	configuration := config.GetInstance()
+
+	// handlers
 	userHandler := handlers.NewUserApiHanlder(configuration, GrpcUserService.Instance)
-	http.HandleFunc("/api/LoginUser", userHandler.LoginUser)
-	http.HandleFunc("/api/RegisterUser", userHandler.RegisterUser)
+	studyHandler := handlers.NewStudyHandler(configuration, GrpcStudyService.Instance)
+
+	// routing
+	router.HandleFunc("/api/v1/LoginUser", userHandler.LoginUser)
+	router.HandleFunc("/api/v1/RegisterUser", userHandler.RegisterUser)
+	router.HandleFunc("/api/v1/GetUserRecord/{id}", studyHandler.GetUserRecord)
+	router.HandleFunc("/api/v1/CreateUserRecord", studyHandler.CreateUserRecord)
+
 	dir, _ := os.Getwd()
 	fmt.Println("current path :" + dir)
 
@@ -26,5 +41,5 @@ func main() {
 		configuration.GetConfig(config.MAIN_SERVICE_PORT),
 	)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), router))
 }
