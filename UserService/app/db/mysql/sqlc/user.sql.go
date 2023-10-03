@@ -58,7 +58,7 @@ func (q *Queries) DeleteUserPassword(ctx context.Context, userID int32) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, student_id, fullname, gender, email, datecreated, dateupdated FROM User WHERE id = ? LIMIT 1 FOR UPDATE
+SELECT id, fullname, gender, email, datecreated, dateupdated FROM User WHERE id = ? LIMIT 1 FOR UPDATE
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
@@ -66,7 +66,6 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.StudentID,
 		&i.Fullname,
 		&i.Gender,
 		&i.Email,
@@ -77,7 +76,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, student_id, fullname, gender, email, datecreated, dateupdated FROM User WHERE email = ? LIMIT 1 FOR UPDATE
+SELECT id, fullname, gender, email, datecreated, dateupdated FROM User WHERE email = ? LIMIT 1 FOR UPDATE
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -85,7 +84,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.StudentID,
 		&i.Fullname,
 		&i.Gender,
 		&i.Email,
@@ -107,7 +105,7 @@ func (q *Queries) GetUserPassword(ctx context.Context, userID int32) (UserPasswo
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, student_id, fullname, gender, email, datecreated, dateupdated FROM User ORDER BY id FOR UPDATE
+SELECT id, fullname, gender, email, datecreated, dateupdated FROM User ORDER BY id FOR UPDATE
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
@@ -121,7 +119,6 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
-			&i.StudentID,
 			&i.Fullname,
 			&i.Gender,
 			&i.Email,

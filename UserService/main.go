@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	config "server/StudyService/config"
 	db "server/UserService/app/db/mysql/sqlc"
 	GrpcUserService "server/UserService/app/grpc"
 	"server/UserService/app/sqlconnection"
-	config "server/UserService/config"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

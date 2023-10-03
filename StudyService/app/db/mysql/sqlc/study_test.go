@@ -1,14 +1,20 @@
 package db
 
 // func TestCreateModule(t *testing.T) {
-// 	for i := 0; i < 10; i++ {
+// 	mockModuleData := mock.MockModuleData("FA")
+// 	for _, module := range mockModuleData {
 // 		arg := CreateModuleParams{
-// 			Name:        random.RandomTopic(true),
+// 			Name:        module,
 // 			Description: sql.NullString{String: "test", Valid: true},
 // 		}
-
-// 		err := testQueries.CreateModule(context.Background(), arg)
+// 		result, err := testQueries.CreateModule(context.Background(), arg)
 // 		require.NoError(t, err)
+
+// 		id, err := result.LastInsertId()
+
+// 		require.NoError(t, err)
+// 		require.NotEmpty(t, id)
+// 		require.NotZero(t, id)
 // 	}
 // }
 

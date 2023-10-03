@@ -6,10 +6,11 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
-	CreateModule(ctx context.Context, arg CreateModuleParams) error
+	CreateModule(ctx context.Context, arg CreateModuleParams) (sql.Result, error)
 	CreateUserRecord(ctx context.Context, arg CreateUserRecordParams) error
 	DeleteModule(ctx context.Context, id int32) error
 	DeleteUserRecord(ctx context.Context, id int32) error

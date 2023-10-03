@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createModule = `-- name: CreateModule :exec
+const createModule = `-- name: CreateModule :execresult
 INSERT INTO ` + "`" + `Module` + "`" + ` (` + "`" + `name` + "`" + `, ` + "`" + `description` + "`" + `, ` + "`" + `created_at` + "`" + `, ` + "`" + `updated_at` + "`" + `) VALUES (?, ?, NOW(), NOW())
 `
 
@@ -19,9 +19,8 @@ type CreateModuleParams struct {
 	Description sql.NullString `json:"description"`
 }
 
-func (q *Queries) CreateModule(ctx context.Context, arg CreateModuleParams) error {
-	_, err := q.db.ExecContext(ctx, createModule, arg.Name, arg.Description)
-	return err
+func (q *Queries) CreateModule(ctx context.Context, arg CreateModuleParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createModule, arg.Name, arg.Description)
 }
 
 const createUserRecord = `-- name: CreateUserRecord :exec

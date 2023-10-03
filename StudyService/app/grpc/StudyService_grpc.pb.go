@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StudyServiceClient interface {
 	GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error)
+	CreateUserRecord(ctx context.Context, in *CreateUserRecordRequest, opts ...grpc.CallOption) (*CreateUserRecordResponse, error)
 }
 
 type studyServiceClient struct {
@@ -42,11 +43,21 @@ func (c *studyServiceClient) GetUserRecord(ctx context.Context, in *GetUserRecor
 	return out, nil
 }
 
+func (c *studyServiceClient) CreateUserRecord(ctx context.Context, in *CreateUserRecordRequest, opts ...grpc.CallOption) (*CreateUserRecordResponse, error) {
+	out := new(CreateUserRecordResponse)
+	err := c.cc.Invoke(ctx, "/StudyService/CreateUserRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StudyServiceServer is the server API for StudyService service.
 // All implementations must embed UnimplementedStudyServiceServer
 // for forward compatibility
 type StudyServiceServer interface {
 	GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error)
+	CreateUserRecord(context.Context, *CreateUserRecordRequest) (*CreateUserRecordResponse, error)
 	mustEmbedUnimplementedStudyServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedStudyServiceServer struct {
 
 func (UnimplementedStudyServiceServer) GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecord not implemented")
+}
+func (UnimplementedStudyServiceServer) CreateUserRecord(context.Context, *CreateUserRecordRequest) (*CreateUserRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserRecord not implemented")
 }
 func (UnimplementedStudyServiceServer) mustEmbedUnimplementedStudyServiceServer() {}
 
@@ -88,6 +102,24 @@ func _StudyService_GetUserRecord_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StudyService_CreateUserRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StudyServiceServer).CreateUserRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/StudyService/CreateUserRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StudyServiceServer).CreateUserRecord(ctx, req.(*CreateUserRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StudyService_ServiceDesc is the grpc.ServiceDesc for StudyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var StudyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserRecord",
 			Handler:    _StudyService_GetUserRecord_Handler,
+		},
+		{
+			MethodName: "CreateUserRecord",
+			Handler:    _StudyService_CreateUserRecord_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -42,5 +42,25 @@ func (s *ZStudyServiceServer) GetUserRecord(ctx context.Context, request *GetUse
 	return response, nil
 }
 
+func (s *ZStudyServiceServer) CreateUserRecord(ctx context.Context, request *CreateUserRecordRequest) (*CreateUserRecordResponse, error) {
+	requestParams := db.CreateUserRecordParams{
+		UserID:   request.UserId,
+		ModuleID: request.ModuleId,
+		Weight:   request.Weight,
+		Score:    request.Score,
+	}
+
+	record, err := s.innerServer.CreateUserRecordTx(ctx, requestParams)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateUserRecordResponse{
+		UserId: record.UserId,
+	}
+
+	return response, nil
+}
+
 func (s *ZStudyServiceServer) mustEmbedUnimplementedStudyServiceServer() {
 }

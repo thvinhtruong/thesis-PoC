@@ -7,16 +7,16 @@ import (
 )
 
 type ZUserServiceServer struct {
-	repository db.Repository
+	repository db.UserRepository
 }
 
-func NewZUserServiceServer(repository db.Repository) ZUserServiceServer {
+func NewZUserServiceServer(repository db.UserRepository) ZUserServiceServer {
 	return ZUserServiceServer{repository: repository}
 }
 
 func (s *ZUserServiceServer) LoginUser(ctx context.Context, request *LoginUserRequest) (*LoginUserResponse, error) {
 	user := db.LoginUserParams{
-		Email:    request.Phone,
+		Email:    request.Email,
 		Password: request.Password,
 	}
 
@@ -38,7 +38,7 @@ func (s *ZUserServiceServer) RegisterUser(ctx context.Context, request *Register
 	user := db.RegisterUserParams{
 		Fullname: request.Fullname,
 		Password: request.Password,
-		Email:    request.Phone,
+		Email:    request.Email,
 		Gender:   request.Gender,
 	}
 

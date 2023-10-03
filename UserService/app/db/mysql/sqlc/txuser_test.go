@@ -19,7 +19,7 @@ func TestRegisterUser(t *testing.T) {
 	userUseCase := NewRepository(testDB)
 	user1 := RegisterUserParams{
 		Fullname: "test1",
-		Email:    random.RandomPhone(),
+		Email:    random.RandomEmail(),
 		Password: "test",
 		Gender:   "male",
 	}

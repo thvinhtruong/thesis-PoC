@@ -2,6 +2,17 @@ syntax="proto3";
 
 option go_package="./GrpcStudyService";
 
+message CreateUserRecordRequest {
+    int32 UserId=1;
+    int32 ModuleId=2;
+    int32 Weight=3;
+    int32 Score=4;
+}
+
+message CreateUserRecordResponse {
+    int32 UserId=1;
+}
+
 message GetUserRecordRequest {
     int32 UserId=1;
 }
@@ -18,6 +29,7 @@ message GetUserRecordResponse {
 
 service StudyService {
     rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
+    rpc CreateUserRecord(CreateUserRecordRequest) returns (CreateUserRecordResponse);
 }
 
 

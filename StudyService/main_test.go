@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	db "server/StudyService/app/db/mysql/sqlc"
 	GrpcStudyService "server/StudyService/app/grpc"
@@ -21,6 +22,26 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// func TestCreateUserRecord(t *testing.T) {
+// 	dbConn := sqlconnection.GetDB()
+
+// 	repository := db.NewStudyRepository(dbConn)
+
+// 	studyServiceServer := GrpcStudyService.NewZStudyServiceServer(repository)
+
+// 	for j := 101; j <= 200; j++ {
+// 		for i := 21; i <= 40; i++ {
+// 			request := GrpcStudyService.CreateUserRecordRequest{
+// 				UserId:   int32(j),
+// 				ModuleId: int32(i),
+// 				Weight:   int32(random.RandomInt(1, 10)),
+// 				Score:    int32(random.RandomInt(1, 10)),
+// 			}
+// 			studyServiceServer.CreateUserRecord(context.Background(), &request)
+// 		}
+// 	}
+// }
+
 func TestGetUserRecord(t *testing.T) {
 	dbConn := sqlconnection.GetDB()
 
@@ -28,7 +49,7 @@ func TestGetUserRecord(t *testing.T) {
 
 	studyServiceServer := GrpcStudyService.NewZStudyServiceServer(repository)
 	request := GrpcStudyService.GetUserRecordRequest{
-		UserId: 1,
+		UserId: 101,
 	}
 
 	result, err := studyServiceServer.GetUserRecord(context.Background(), &request)
@@ -57,5 +78,5 @@ func TestGetUserRecord(t *testing.T) {
 		}
 	}
 
-	// log.Println(result)
+	log.Println(result)
 }

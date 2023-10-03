@@ -11,7 +11,6 @@ import (
 
 type User struct {
 	ID          int32        `json:"id"`
-	StudentID   string       `json:"student_id"`
 	Fullname    string       `json:"fullname"`
 	Gender      string       `json:"gender"`
 	Email       string       `json:"email"`

@@ -1,17 +1,20 @@
 package random
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
+
+	rn "github.com/random-names/go"
 )
 
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-func RandomInt(min, max int64) int64 {
-	return min + rand.Int63n(max-min+1)
+func RandomInt(min, max int) int {
+	return min + rand.Intn(max-min+1)
 }
 
 func RandomString(n int) string {
@@ -23,8 +26,29 @@ func RandomString(n int) string {
 	return string(b)
 }
 
-func RandomName() string {
-	return RandomString(7)
+func RandomName(isFemale bool) string {
+	var firstName string
+	var err error
+
+	lastName, err := rn.GetRandomName("./census-90/all.last", &rn.Options{})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if isFemale {
+		firstName, err = rn.GetRandomName("./census-90/female.first", &rn.Options{})
+		if err != nil {
+			fmt.Println(err)
+		}
+
+	} else {
+		firstName, err = rn.GetRandomName("./census-90/male.first", &rn.Options{})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	return firstName + " " + lastName
 }
 
 func RandomGender() string {
@@ -40,10 +64,6 @@ func RandomPhone() string {
 	return strconv.Itoa(int(RandomInt(1000000000, 9999999999)))
 }
 
-func RandomDate() time.Time {
-	return time.Unix(RandomInt(0, time.Now().Unix()), 0)
-}
-
 func RandomAge() int {
 	return int(RandomInt(18, 100))
 }
@@ -51,6 +71,11 @@ func RandomAge() int {
 func RandomTopic() string {
 	topics := []string{"Math", "English", "Physics", "Chemistry", "Biology", "History", "Geography", "Literature", "Music", "Art", "Sport"}
 	return topics[rand.Intn(10)]
+}
+
+func RandomCourse() string {
+	courses := []string{"CS", "FA"}
+	return courses[rand.Intn(2)]
 }
 
 func RandomCity() string {

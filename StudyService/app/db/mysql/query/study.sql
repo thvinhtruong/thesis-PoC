@@ -1,4 +1,4 @@
--- name: CreateModule :exec
+-- name: CreateModule :execresult
 INSERT INTO `Module` (`name`, `description`, `created_at`, `updated_at`) VALUES (?, ?, NOW(), NOW());
 
 -- name: GetModule :one

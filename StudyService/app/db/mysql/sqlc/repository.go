@@ -6,6 +6,7 @@ import (
 )
 
 type StudyRepository interface {
+	CreateUserRecordTx(ctx context.Context, arg CreateUserRecordParams) (CreateUserRecordResult, error)
 	GetUserRecordTx(ctx context.Context, arg GetUserRecordParams) (GetUserRecordResult, error)
 }
 

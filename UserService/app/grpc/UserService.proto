@@ -3,7 +3,7 @@ syntax="proto3";
 option go_package="./GrpcUserService";
 
 message LoginUserRequest {
-    string Phone=1;
+    string Email=1;
     string Password=2;
 }
 
@@ -14,7 +14,7 @@ message LoginUserResponse {
 
 message RegisterUserRequest {
     string Fullname=1;
-    string Phone=2;
+    string Email=2;
     string Password=3;
     string Gender=4;
     int64 DateCreated=5;

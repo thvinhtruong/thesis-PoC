@@ -12,8 +12,8 @@ import (
 func TestCreateUser(t *testing.T) {
 	ctx := context.Background()
 	arg := CreateUserParams{
-		Fullname: random.RandomName(),
-		Email:    random.RandomPhone(),
+		Fullname: random.RandomName(true),
+		Email:    random.RandomEmail(),
 		Gender:   random.RandomGender(),
 	}
 

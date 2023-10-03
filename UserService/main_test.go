@@ -25,19 +25,6 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func CreateRandomUser() db.RegisterTutorParams {
-	return db.RegisterTutorParams{
-		Phone:    random.RandomPhone(),
-		Password: "123456789",
-		Fullname: random.RandomName(),
-		Gender:   random.RandomGender(),
-		Topic:    random.RandomTopic(),
-		City:     random.RandomCity(),
-		Country:  random.RandomCountry(),
-		Age:      int32(random.RandomAge()),
-	}
-}
-
 func TestRegisterUser(t *testing.T) {
 	dbconn := sqlconnection.GetDB()
 	repository := db.NewRepository(dbconn)
@@ -45,13 +32,13 @@ func TestRegisterUser(t *testing.T) {
 	user := db.RegisterUserParams{
 		Email:    random.RandomPhone(),
 		Password: "123456789",
-		Fullname: "Thang",
+		Fullname: "Vinh",
 		Gender:   random.RandomGender(),
 	}
 
 	userServiceServer := GrpcUserService.NewZUserServiceServer(repository)
 	request := GrpcUserService.RegisterUserRequest{
-		Phone:    user.Email,
+		Email:    user.Email,
 		Password: user.Password,
 		Fullname: user.Fullname,
 		Gender:   user.Gender,

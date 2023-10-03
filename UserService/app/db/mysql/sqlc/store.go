@@ -11,6 +11,13 @@ type TxStore struct {
 	db *sql.DB
 }
 
+func NewTxStore(db *sql.DB) *TxStore {
+	return &TxStore{
+		Queries: New(db),
+		db:      db,
+	}
+}
+
 func (t *TxStore) Rollback() error {
 	return t.Queries.db.(*sql.Tx).Rollback()
 }
