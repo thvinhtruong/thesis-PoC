@@ -6,8 +6,8 @@ import (
 	"net"
 	db "server/StudyService/app/db/mysql/sqlc"
 	GrpcStudyService "server/StudyService/app/grpc"
+	"server/StudyService/app/sqlconnection"
 	config "server/StudyService/config"
-	"server/UserService/app/sqlconnection"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -15,7 +15,7 @@ import (
 
 func main() {
 	configuration := config.Singleton
-	dbconn := sqlconnection.DBConn
+	dbconn := sqlconnection.GetDB()
 	repository := db.NewStudyRepository(dbconn)
 	host := fmt.Sprintf(
 		"%v:%v",

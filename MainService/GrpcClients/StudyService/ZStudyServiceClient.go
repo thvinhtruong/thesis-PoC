@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var Instance *ZStudyServiceClient
+var StudyInstance *ZStudyServiceClient
 
 func init() {
 	Config := config.GetInstance()
@@ -27,7 +27,7 @@ func init() {
 	}
 
 	innerClient := NewStudyServiceClient(conn)
-	Instance = &ZStudyServiceClient{
+	StudyInstance = &ZStudyServiceClient{
 		innerClient: innerClient,
 		Config:      Config,
 	}
@@ -41,11 +41,19 @@ type ZStudyServiceClient struct {
 }
 
 func (c *ZStudyServiceClient) CreateUserRecord(request *CreateUserRecordRequest) *CreateUserRecordResponse {
-	response, _ := c.innerClient.CreateUserRecord(context.Background(), request)
+	response, err := c.innerClient.CreateUserRecord(context.Background(), request)
+	if err != nil {
+		log.Printf("Error creating user record: %v", err)
+		return nil
+	}
 	return response
 }
 
 func (c *ZStudyServiceClient) GetUserRecord(request *GetUserRecordRequest) *GetUserRecordResponse {
-	response, _ := c.innerClient.GetUserRecord(context.Background(), request)
+	response, err := c.innerClient.GetUserRecord(context.Background(), request)
+	if err != nil {
+		log.Printf("Error getting user record: %v", err)
+		return nil
+	}
 	return response
 }

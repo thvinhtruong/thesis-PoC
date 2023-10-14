@@ -11,7 +11,7 @@ import (
 
 var DBConn *sql.DB
 
-func init() {
+func OpenConnection() {
 	var err error
 	configuration := config.Singleton
 	DBConn, err = sql.Open("mysql", "root:root@tcp(localhost:3306)/UserService?parseTime=true")
@@ -21,7 +21,6 @@ func init() {
 		panic(err)
 	}
 
-	DBConn.SetMaxOpenConns(100)
 	DBConn.SetMaxIdleConns(10)
 	DBConn.SetConnMaxLifetime(time.Minute * 3)
 
@@ -33,6 +32,7 @@ func init() {
 }
 
 func GetDB() *sql.DB {
+	OpenConnection()
 	return DBConn
 }
 

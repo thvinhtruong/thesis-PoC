@@ -15,7 +15,7 @@ import (
 
 func main() {
 	configuration := config.Singleton
-	dbconn := sqlconnection.DBConn
+	dbconn := sqlconnection.GetDB()
 	repository := db.NewRepository(dbconn)
 	host := fmt.Sprintf(
 		"%v:%v",

@@ -22,7 +22,7 @@ func main() {
 
 	// handlers
 	userHandler := handlers.NewUserApiHanlder(configuration, GrpcUserService.Instance)
-	studyHandler := handlers.NewStudyHandler(configuration, GrpcStudyService.Instance)
+	studyHandler := handlers.NewStudyHandler(configuration, GrpcStudyService.StudyInstance)
 
 	// routing
 	router.HandleFunc("/api/v1/LoginUser", userHandler.LoginUser)
