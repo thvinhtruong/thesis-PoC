@@ -24,6 +24,9 @@ func main() {
 	userHandler := handlers.NewUserApiHanlder(configuration, GrpcUserService.Instance)
 	studyHandler := handlers.NewStudyHandler(configuration, GrpcStudyService.StudyInstance)
 
+	// middleware
+	router.Use()
+
 	// routing
 	router.HandleFunc("/api/v1/LoginUser", userHandler.LoginUser)
 	router.HandleFunc("/api/v1/RegisterUser", userHandler.RegisterUser)

@@ -1,6 +1,7 @@
 go 1.20
 
 use (
+	./ReverseProxy
 	./StudyService
 	./MainService
 	./UserService
