@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -23,10 +24,10 @@ type cachedResponse struct {
 
 func main() {
 	// Define target gRPC service address
-	targetAddress := "localhost:9002"
+	targetAddress := "localhost:9000"
 
 	// Create a gRPC connection to the target service
-	conn, _ := grpc.Dial(targetAddress, grpc.WithInsecure())
+	conn, _ := grpc.Dial(targetAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	// Create a reverse proxy
 	proxy := &GRPCProxy{targetConn: conn}
@@ -69,11 +70,14 @@ func (p *GRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Cache the response
 	cacheMutex.Lock()
+
 	cache[method] = &cachedResponse{
 		Response:    resp,
 		LastFetched: time.Now(),
 	}
 	cacheMutex.Unlock()
+
+	// Listen and Serve
 
 	fmt.Println("Fetched from gRPC:", method)
 	p.writeCachedResponse(w, resp)
