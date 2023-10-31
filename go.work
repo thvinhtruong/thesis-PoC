@@ -5,4 +5,5 @@ use (
 	./StudyService
 	./MainService
 	./UserService
+	./MockClient
 )
