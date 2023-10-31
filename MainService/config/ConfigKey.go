@@ -16,4 +16,6 @@ var STUDY_SERVICE_HOST ConfigKey = ConfigKey{key: "StudyServiceHost"}
 
 var STUDY_SERVICE_PORT ConfigKey = ConfigKey{key: "StudyServicePort"}
 
+var ENABLE_HTTP_CACHE ConfigKey = ConfigKey{key: "EnableHttpCache"}
+
 var HMAC_KEY ConfigKey = ConfigKey{key: "HMAC_KEY"}

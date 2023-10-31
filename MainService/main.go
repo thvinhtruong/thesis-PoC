@@ -9,6 +9,7 @@ import (
 	GrpcUserService "server/MainService/GrpcClients/UserService"
 	"server/MainService/config"
 	"server/MainService/handlers"
+	"server/MainService/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -24,14 +25,20 @@ func main() {
 	userHandler := handlers.NewUserApiHanlder(configuration, GrpcUserService.Instance)
 	studyHandler := handlers.NewStudyHandler(configuration, GrpcStudyService.StudyInstance)
 
-	// middleware
-	router.Use()
+	// // middleware
+	// if configuration.GetConfig(config.ENABLE_HTTP_CACHE) == "true" {
+	// 	log.Println("Enable http cache")
+	// 	router.Use(reverseproxy.HttpResponseCachingMiddleware)
+	// }
 
 	// routing
 	router.HandleFunc("/api/v1/LoginUser", userHandler.LoginUser)
 	router.HandleFunc("/api/v1/RegisterUser", userHandler.RegisterUser)
 	router.HandleFunc("/api/v1/GetUserRecord/{id}", studyHandler.GetUserRecord)
 	router.HandleFunc("/api/v1/CreateUserRecord", studyHandler.CreateUserRecord)
+
+	// Calculate post request
+	router.Use(middleware.MeasureResponseDuration)
 
 	dir, _ := os.Getwd()
 	fmt.Println("current path :" + dir)

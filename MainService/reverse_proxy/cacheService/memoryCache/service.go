@@ -1,6 +1,7 @@
 package memoryCache
 
 import (
+	"log"
 	"sync"
 	"time"
 )
@@ -13,6 +14,12 @@ type CacheServiceAdapter struct {
 	cacheMutex sync.RWMutex
 	storage    map[uint64][]byte
 	// cacheState CacheState
+}
+
+func NewCacheServiceAdapter() *CacheServiceAdapter {
+	return &CacheServiceAdapter{
+		storage: make(map[uint64][]byte),
+	}
 }
 
 func (service *CacheServiceAdapter) Get(key uint64) ([]byte, bool) {
@@ -65,5 +72,5 @@ func (service *CacheServiceAdapter) Release() {
 
 // Refresh new data if query expired cache key
 func RefreshCache() {
-	time.Sleep(cacheExpiration)
+	log.Println("Refreshing cache...")
 }

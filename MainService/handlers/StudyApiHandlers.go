@@ -5,6 +5,7 @@ import (
 	"net/http"
 	GrpcStudyService "server/MainService/GrpcClients/StudyService"
 	"server/MainService/config"
+	reverseproxy "server/MainService/reverse_proxy"
 	_struct "server/MainService/struct"
 	"strconv"
 
@@ -71,6 +72,11 @@ func (s *StudyHandler) CreateUserRecord(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *StudyHandler) GetUserRecord(w http.ResponseWriter, r *http.Request) {
+	isEnableCache := true
+	if reverseproxy.HttpCacheWriter(w, r, nil, isEnableCache) {
+		return
+	}
+
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
@@ -90,6 +96,11 @@ func (s *StudyHandler) GetUserRecord(w http.ResponseWriter, r *http.Request) {
 
 	response := s.Repo.GetUserRecord(&request)
 
+	if response == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	message := _struct.ApiMessage{
 		ErrorCode: 1,
 		Message:   "success",
@@ -98,7 +109,7 @@ func (s *StudyHandler) GetUserRecord(w http.ResponseWriter, r *http.Request) {
 
 	out, _ := json.Marshal(message)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	if !reverseproxy.HttpCacheWriter(w, r, out, isEnableCache) {
+		w.Write(out)
+	}
 }

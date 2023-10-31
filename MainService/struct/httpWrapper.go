@@ -1,4 +1,4 @@
-package reverseproxy
+package _struct
 
 import (
 	"net/http"
@@ -22,8 +22,6 @@ type HttpResponseWrapper struct {
 	Frequency int
 }
 
-type ClientCachedData struct {
-	HttpResponse             HttpResponseWrapper
-	TTL                      time.Duration
-	IsWrittenToExpiredHeader bool
+type CustomResponseWriter struct {
+	http.ResponseWriter
 }
