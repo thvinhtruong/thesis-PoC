@@ -106,8 +106,6 @@ func HttpCacheWriter(w http.ResponseWriter, r *http.Request, responseValue []byt
 		response.LastAccess = time.Now()
 		response.Frequency += 1
 
-		log.Println("Cached hit!")
-
 		for key, value := range response.Header {
 			customWriter.Header()[key] = value
 		}
@@ -115,9 +113,10 @@ func HttpCacheWriter(w http.ResponseWriter, r *http.Request, responseValue []byt
 		// if cache found, write the cached value, and no proceed to handler
 		w.WriteHeader(http.StatusOK)
 		w.Write(response.Value)
-
 		return true
-	} else if !found && isEnable && responseValue != nil {
+	}
+
+	if !found && isEnable && responseValue != nil {
 		customWriter.Header().Set("Content-Type", "application/json")
 		customWriter.Header().Set("Cache-Control", "max-age=3600")
 		customWriter.Header().Set("Expires", time.Now().Add(time.Hour).Format(http.TimeFormat))

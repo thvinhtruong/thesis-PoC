@@ -28,10 +28,6 @@ func (service *CacheServiceAdapter) Get(key uint64) ([]byte, bool) {
 	service.cacheMutex.RUnlock()
 
 	if found {
-		if time.Since(time.Now()) > cacheExpiration {
-			// Temporary: do nothing
-			RefreshCache()
-		}
 		return cachedResp, true
 	}
 

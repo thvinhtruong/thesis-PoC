@@ -72,7 +72,14 @@ func (s *StudyHandler) CreateUserRecord(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *StudyHandler) GetUserRecord(w http.ResponseWriter, r *http.Request) {
-	isEnableCache := true
+	cacheEnable := r.URL.Query().Get("cacheEnable")
+	if len(cacheEnable) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// if enable cache http in query, read from URL
+	isEnableCache := cacheEnable == "1"
 	if reverseproxy.HttpCacheWriter(w, r, nil, isEnableCache) {
 		return
 	}
@@ -109,6 +116,7 @@ func (s *StudyHandler) GetUserRecord(w http.ResponseWriter, r *http.Request) {
 
 	out, _ := json.Marshal(message)
 
+	// write into cache if cache is enable
 	if !reverseproxy.HttpCacheWriter(w, r, out, isEnableCache) {
 		w.Write(out)
 	}

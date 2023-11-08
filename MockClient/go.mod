@@ -1,3 +1,3 @@
-module client/poctest
+module poctest
 
 go 1.20

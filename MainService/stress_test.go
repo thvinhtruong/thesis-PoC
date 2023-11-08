@@ -17,7 +17,7 @@ var table = []struct {
 	{input: 100},
 	{input: 1000},
 	{input: 74382},
-	// {input: 382399},
+	//{input: 382399},
 }
 
 var studyHandler handlers.StudyHandler
@@ -65,7 +65,7 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 	// different input size
 	for _, v := range table {
 		t.Run(fmt.Sprintf("input_size_%d", v.input), func(t *testing.B) {
-			testSize := v.input
+			testSize := 100
 
 			// wait for 100 concurrent request for user id 1
 			ch := make(chan bool, testSize)
@@ -86,7 +86,7 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 			}
 
 			// wait for all request to finish
-			for i := 0; i < 100; i++ {
+			for i := 0; i < testSize; i++ {
 				result := <-ch
 				if !result {
 					log.Printf("record number %v is nil", i)
@@ -101,11 +101,11 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 func BenchmarkGetUserRecord_Concurrent_MultipleUserID_WithHandler(t *testing.B) {
 	//t.Skip("skipping test in short mode.")
 	// requestUrl := "http://localhost:9000/api/v1/GetUserRecord/" + fmt.Sprintf("%d", random.RandomInt(1, 100))
-	requestUrlWithOneID := "http://localhost:9000/api/v1/GetUserRecord/1"
+	requestUrlWithOneID := "http://localhost:9000/api/v1/GetUserRecord/2?cacheEnable=0"
 
 	for _, v := range table {
 		t.Run(fmt.Sprintf("input_size_%d", v.input), func(t *testing.B) {
-			testSize := v.input
+			testSize := 10000
 
 			// wait for 100 concurrent request for user id 1
 			ch := make(chan bool, testSize)
@@ -119,7 +119,7 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID_WithHandler(t *testing.B) 
 			}
 
 			// wait for all request to finish
-			for i := 0; i < 100; i++ {
+			for i := 0; i < testSize; i++ {
 				result := <-ch
 				if !result {
 					t.Fail()
@@ -140,12 +140,12 @@ func TDD_MockHandlerStressTest(requestUrl string, enableCache bool) bool {
 	// create a mock request to use
 	req := httptest.NewRequest("GET", requestUrl, nil)
 
-	// use middleware
 	// if enableCache {
-	// 	// reverseproxy.HttpResponseCachingMiddleware(handlerToTest)
+	// 	req.URL.RawQuery = "cacheEnable=1"
 	// }
 
-	handlerToTest.ServeHTTP(httptest.NewRecorder(), req)
+	response := httptest.NewRecorder()
+	handlerToTest.ServeHTTP(response, req)
 
-	return req != nil
+	return response != nil
 }

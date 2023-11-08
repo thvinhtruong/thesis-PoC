@@ -124,7 +124,7 @@ func TestGetUserRecordHandler(t *testing.T) {
 	handlerToTest := AddContextWithRequestID(testHandler)
 
 	// create a mock request to use
-	req := httptest.NewRequest("GET", "http://localhost:9000/api/v1/GetUserRecord/2", nil)
+	req := httptest.NewRequest("GET", "http://localhost:9000/api/v1/GetUserRecord/2?cacheEnable=1", nil)
 
 	// use middleware
 	reverseproxy.HttpResponseCachingMiddleware(handlerToTest)
