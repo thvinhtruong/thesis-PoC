@@ -15,8 +15,9 @@ var table = []struct {
 	input int
 }{
 	{input: 100},
+	{input: 200},
+	{input: 500},
 	{input: 1000},
-	{input: 74382},
 	//{input: 382399},
 }
 
@@ -65,7 +66,7 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 	// different input size
 	for _, v := range table {
 		t.Run(fmt.Sprintf("input_size_%d", v.input), func(t *testing.B) {
-			testSize := 100
+			testSize := v.input
 
 			// wait for 100 concurrent request for user id 1
 			ch := make(chan bool, testSize)
@@ -74,7 +75,7 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 			for i := 0; i < testSize; i++ {
 				go func() {
 					got := studyHandler.Repo.GetUserRecord(&GrpcStudyService.GetUserRecordRequest{
-						UserId: int32(random.RandomInt(1, 100)),
+						UserId: int32(random.RandomInt(1, 10)),
 					})
 
 					if got == nil {
@@ -98,22 +99,54 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID(t *testing.B) {
 	}
 }
 
-func BenchmarkGetUserRecord_Concurrent_MultipleUserID_WithHandler(t *testing.B) {
-	//t.Skip("skipping test in short mode.")
+func BenchmarkGetUserRecord_Concurrent_OneUserID_WithHandler(t *testing.B) {
+	t.Skip("skipping test in short mode.")
 	// requestUrl := "http://localhost:9000/api/v1/GetUserRecord/" + fmt.Sprintf("%d", random.RandomInt(1, 100))
 	requestUrlWithOneID := "http://localhost:9000/api/v1/GetUserRecord/2?cacheEnable=0"
 
 	for _, v := range table {
 		t.Run(fmt.Sprintf("input_size_%d", v.input), func(t *testing.B) {
-			testSize := 10000
+			//testSize := v.input
+
+			// wait for 100 concurrent request for user id 1
+			ch := make(chan bool, v.input)
+
+			// 100 concurrent request for user id 1
+			for i := 0; i < v.input; i++ {
+				go func() {
+					isSuccess := TDD_MockHandlerStressTest(requestUrlWithOneID, true)
+					ch <- isSuccess
+				}()
+			}
+
+			// wait for all request to finish
+			for i := 0; i < v.input; i++ {
+				result := <-ch
+				if !result {
+					t.Fail()
+					break
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkGetUserRecord_Concurrent_MultipleUserID_WithHandler(t *testing.B) {
+	//t.Skip("skipping test in short mode.")
+	// requestUrl := "http://localhost:9000/api/v1/GetUserRecord/" + fmt.Sprintf("%d", random.RandomInt(1, 100))
+
+	for _, v := range table {
+		t.Run(fmt.Sprintf("input_size_%d", v.input), func(t *testing.B) {
+			testSize := v.input
 
 			// wait for 100 concurrent request for user id 1
 			ch := make(chan bool, testSize)
 
 			// 100 concurrent request for user id 1
 			for i := 0; i < testSize; i++ {
+				requestUrlWithRandomId := "http://localhost:9000/api/v1/GetUserRecord/" + fmt.Sprintf("%d", random.RandomInt(1, 10)) + "?cacheEnable=1"
 				go func() {
-					isSuccess := TDD_MockHandlerStressTest(requestUrlWithOneID, true)
+					isSuccess := TDD_MockHandlerStressTest(requestUrlWithRandomId, true)
 					ch <- isSuccess
 				}()
 			}
@@ -128,7 +161,6 @@ func BenchmarkGetUserRecord_Concurrent_MultipleUserID_WithHandler(t *testing.B) 
 			}
 		})
 	}
-
 }
 
 func TDD_MockHandlerStressTest(requestUrl string, enableCache bool) bool {
@@ -147,5 +179,11 @@ func TDD_MockHandlerStressTest(requestUrl string, enableCache bool) bool {
 	response := httptest.NewRecorder()
 	handlerToTest.ServeHTTP(response, req)
 
-	return response != nil
+	// check the status code
+	if response.Code != 200 {
+		log.Printf("response code is %v", response.Code)
+		return false
+	}
+
+	return true
 }

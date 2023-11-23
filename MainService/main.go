@@ -31,14 +31,15 @@ func main() {
 	// 	router.Use(reverseproxy.HttpResponseCachingMiddleware)
 	// }
 
+	router.Use(middleware.MeasureResponseDuration)
+
+	//router.Use(middleware.RateLimitMiddleware)
+
 	// routing
 	router.HandleFunc("/api/v1/LoginUser", userHandler.LoginUser)
 	router.HandleFunc("/api/v1/RegisterUser", userHandler.RegisterUser)
 	router.HandleFunc("/api/v1/GetUserRecord/{id}", studyHandler.GetUserRecord)
 	router.HandleFunc("/api/v1/CreateUserRecord", studyHandler.CreateUserRecord)
-
-	// Calculate post request
-	router.Use(middleware.MeasureResponseDuration)
 
 	dir, _ := os.Getwd()
 	fmt.Println("current path :" + dir)
@@ -51,5 +52,18 @@ func main() {
 		configuration.GetConfig(config.MAIN_SERVICE_PORT),
 	)
 
+	// attempt := 3
+
+	// for attempt > 0 {
+	// 	attempt--
+	// 	err := http.ListenAndServe(fmt.Sprintf(":%v", port), router)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 		continue
+	// 	}
+	// 	break
+	// }
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), router))
+
 }

@@ -1,12 +1,13 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	"os"
+	"runtime"
+	"runtime/pprof"
 	"time"
-
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 type statusRecorder struct {
@@ -15,17 +16,6 @@ type statusRecorder struct {
 }
 
 func MeasureResponseDuration(next http.Handler) http.Handler {
-	buckets := []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
-
-	responseTimeHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: "namespace",
-		Name:      "http_server_request_duration_seconds",
-		Help:      "Histogram of response time for handler in seconds",
-		Buckets:   buckets,
-	}, []string{"route", "method", "status_code"})
-
-	//prometheus.MustRegister(responseTimeHistogram)
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		rec := statusRecorder{w, 200}
@@ -33,14 +23,72 @@ func MeasureResponseDuration(next http.Handler) http.Handler {
 		next.ServeHTTP(&rec, r)
 
 		duration := time.Since(start)
-		statusCode := strconv.Itoa(rec.statusCode)
 		route := getRoutePattern(r)
-		responseTimeHistogram.WithLabelValues(route, r.Method, statusCode).Observe(duration.Seconds())
-		log.Printf("Request duration for %s: %v", route, duration)
+
+		log.Printf("Request duration for %s: %s", route, duration)
+		// go func() {
+		// 	saveLog("noCache", fmt.Sprintf("%v", duration))
+		// }()
+		//SaveMemoryProfiling()
 	})
 }
 
 func getRoutePattern(r *http.Request) string {
 	routePattern := r.URL.Path
+	if r.URL.RawQuery != "" {
+		routePattern += "?" + r.URL.RawQuery
+	}
+
 	return routePattern
+}
+
+func saveLog(filename string, content ...string) {
+	path := "./resource_allocation/" + filename + ".txt"
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer f.Close()
+
+	for _, c := range content {
+		if _, err := f.WriteString(c); err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+func ResourceProfiler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Start CPU profiling
+		cpuProfile, err := os.Create("cpu_profile.prof")
+		if err != nil {
+			log.Fatal("could not create CPU profile: ", err)
+		}
+		defer cpuProfile.Close()
+
+		if err := pprof.StartCPUProfile(cpuProfile); err != nil {
+			log.Fatal("could not start CPU profile: ", err)
+		}
+		defer pprof.StopCPUProfile()
+
+		// Call the next handler
+		next.ServeHTTP(w, r)
+	})
+}
+
+func SaveMemoryProfiling() {
+	// Start memory profiling
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+
+	// Print memory statistics
+	//allocation := fmt.Sprintf("%v\n", memStats.Alloc)
+	heapSys := fmt.Sprintf("%v\n", memStats.HeapSys)
+
+	go func() {
+		//saveLog("withCache_mem_1record_totalAllocation", allocation)
+		saveLog("withCache_mem_1record_totalHeapSystem", heapSys)
+	}()
+
 }

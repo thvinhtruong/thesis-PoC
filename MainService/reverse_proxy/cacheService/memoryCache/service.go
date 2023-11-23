@@ -26,7 +26,6 @@ func (service *CacheServiceAdapter) Get(key uint64) ([]byte, bool) {
 	service.cacheMutex.RLock()
 	cachedResp, found := service.storage[key]
 	service.cacheMutex.RUnlock()
-
 	if found {
 		return cachedResp, true
 	}
